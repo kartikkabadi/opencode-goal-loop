@@ -1,0 +1,12 @@
+{
+  "name": "opencode-goal",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Codex-style persistent goals for OpenCode: session-scoped objective, event-driven continuation at safe boundaries, evidence-based completion via goal_complete, opt-in token/turn budgets, quality gates.",
+  "main": "bundle.js",
+  "exports": {
+    ".": "./bundle.js"
+  },
+  "private": true,
+  "license": "MIT"
+}

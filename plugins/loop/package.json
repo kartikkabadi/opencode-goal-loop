@@ -1,0 +1,12 @@
+{
+  "name": "opencode-loop",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Recurring loops for OpenCode: interval or turn cadence, durable state, unlimited by default until LOOP_COMPLETE or explicit stop, goal-aware deferral.",
+  "main": "bundle.js",
+  "exports": {
+    ".": "./bundle.js"
+  },
+  "private": true,
+  "license": "MIT"
+}
