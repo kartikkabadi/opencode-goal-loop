@@ -6,14 +6,14 @@ const ACTIONS = ["list", "stop", "pause", "resume", "status", "help"];
 export function parseInterval(token) {
   if (/^\d+t(urns?)?$/i.test(token)) {
     const n = parseInt(token, 10);
-    return Number.isFinite(n) && n >= 1 ? { kind: "turns", n, raw: token.toLowerCase() } : null;
+    return Number.isSafeInteger(n) && n >= 1 ? { kind: "turns", n, raw: token.toLowerCase() } : null;
   }
   const m = /^(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/.exec(token.toLowerCase());
   if (!m || token === "") return null;
   const [, d, h, min, s] = m;
   if (d == null && h == null && min == null && s == null) return null;
   const ms = ((+d || 0) * 86_400 + (+h || 0) * 3600 + (+min || 0) * 60 + (+s || 0)) * 1000;
-  if (ms <= 0) return null;
+  if (!Number.isSafeInteger(ms) || ms <= 0) return null;
   return { kind: "time", ms, raw: token.toLowerCase() };
 }
 
