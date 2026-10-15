@@ -35,9 +35,30 @@ export function loadStore() {
   }
 }
 
+function isLoopRecord(loop) {
+  if (!loop || typeof loop !== "object" || Array.isArray(loop)) return false;
+  if (typeof loop.id !== "string" || !loop.id || typeof loop.sessionId !== "string" || !loop.sessionId || typeof loop.prompt !== "string") return false;
+  if (!Number.isSafeInteger(loop.fires) || loop.fires < 0) return false;
+  if (loop.maxFires != null && (!Number.isSafeInteger(loop.maxFires) || loop.maxFires < 1 || loop.maxFires > 1000)) return false;
+  if (!["active", "paused", "done", "error"].includes(loop.status)) return false;
+  if (loop.nextRunAt != null && (typeof loop.nextRunAt !== "number" || !Number.isFinite(loop.nextRunAt))) return false;
+  if (loop.backoffMs != null && (!Number.isSafeInteger(loop.backoffMs) || loop.backoffMs < 0 || loop.backoffMs > BUSY_BACKOFF_MAX_MS)) return false;
+  if (loop.consecutiveErrors != null && (!Number.isSafeInteger(loop.consecutiveErrors) || loop.consecutiveErrors < 0)) return false;
+  if (loop.turnsUntilNext != null && (!Number.isSafeInteger(loop.turnsUntilNext) || loop.turnsUntilNext < 0)) return false;
+  if (loop.label != null && typeof loop.label !== "string") return false;
+  if (loop.lastError != null && typeof loop.lastError !== "string") return false;
+  const timestamp = loop.updatedAt ?? loop.createdAt;
+  if (typeof timestamp !== "string" || !Number.isFinite(Date.parse(timestamp))) return false;
+  const interval = loop.interval;
+  if (!interval || typeof interval !== "object" || typeof interval.raw !== "string" || !interval.raw) return false;
+  if (interval.kind === "time") return Number.isSafeInteger(interval.ms) && interval.ms >= MIN_INTERVAL_MS && interval.ms <= MAX_INTERVAL_MS;
+  if (interval.kind === "turns") return Number.isSafeInteger(interval.n) && interval.n > 0;
+  return false;
+}
+
 function gcLoops(loops) {
   const now = Date.now();
-  const kept = loops.filter((l) => now - Date.parse(l.updatedAt ?? l.createdAt ?? 0) < EXPIRY_MS);
+  const kept = loops.filter((l) => isLoopRecord(l) && now - Date.parse(l.updatedAt ?? l.createdAt ?? 0) < EXPIRY_MS);
   if (kept.length !== loops.length) saveStore(kept);
   return kept;
 }
