@@ -38,6 +38,8 @@ export function loadStore() {
 function isLoopRecord(loop) {
   if (!loop || typeof loop !== "object" || Array.isArray(loop)) return false;
   if (typeof loop.id !== "string" || !loop.id || typeof loop.sessionId !== "string" || !loop.sessionId || typeof loop.prompt !== "string") return false;
+  const timestamp = loop.updatedAt ?? loop.createdAt;
+  if (typeof timestamp !== "string" || !Number.isFinite(Date.parse(timestamp))) return false;
   const interval = loop.interval;
   if (!interval || typeof interval !== "object") return false;
   if (interval.kind === "time") return Number.isSafeInteger(interval.ms) && interval.ms > 0;
