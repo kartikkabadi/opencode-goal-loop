@@ -1,0 +1,13 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun test plugins/goal/test plugins/loop/test
+      - run: bun build plugins/goal/index.js --target=bun --external @opencode-ai/plugin --outfile=/tmp/goal-bundle.js
+      - run: bun build plugins/loop/index.js --target=bun --external @opencode-ai/plugin --outfile=/tmp/loop-bundle.js
