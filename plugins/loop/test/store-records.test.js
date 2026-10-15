@@ -20,7 +20,7 @@ for (const [name, load] of [["source", loadStore], ["bundle", bundled.loadStore]
       const valid = newLoop({ sessionId: "ses_good", prompt: "Check progress", interval: { kind: "time", ms: 10000, raw: "10s" } });
       const path = storePath();
       mkdirSync(dirname(path), { recursive: true });
-      for (const malformed of [null, 42, { ...valid, id: null }, { ...valid, interval: null }, { ...valid, interval: { kind: "time", ms: -1 } }]) {
+      for (const malformed of [null, 42, { ...valid, updatedAt: { toString: null } }, { ...valid, updatedAt: 42 }, { ...valid, updatedAt: "invalid" }, { ...valid, updatedAt: null, createdAt: null }, { ...valid, id: null }, { ...valid, interval: null }, { ...valid, interval: { kind: "time", ms: -1 } }]) {
         writeFileSync(path, JSON.stringify({ version: 1, loops: [valid, malformed] }));
         const records = load();
         expect(records.length).toBe(1);
