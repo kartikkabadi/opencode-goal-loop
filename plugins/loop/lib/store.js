@@ -35,9 +35,19 @@ export function loadStore() {
   }
 }
 
+function isLoopRecord(loop) {
+  if (!loop || typeof loop !== "object" || Array.isArray(loop)) return false;
+  if (typeof loop.id !== "string" || !loop.id || typeof loop.sessionId !== "string" || !loop.sessionId || typeof loop.prompt !== "string") return false;
+  const interval = loop.interval;
+  if (!interval || typeof interval !== "object") return false;
+  if (interval.kind === "time") return Number.isSafeInteger(interval.ms) && interval.ms > 0;
+  if (interval.kind === "turns") return Number.isSafeInteger(interval.n) && interval.n > 0;
+  return false;
+}
+
 function gcLoops(loops) {
   const now = Date.now();
-  const kept = loops.filter((l) => now - Date.parse(l.updatedAt ?? l.createdAt ?? 0) < EXPIRY_MS);
+  const kept = loops.filter((l) => isLoopRecord(l) && now - Date.parse(l.updatedAt ?? l.createdAt ?? 0) < EXPIRY_MS);
   if (kept.length !== loops.length) saveStore(kept);
   return kept;
 }
