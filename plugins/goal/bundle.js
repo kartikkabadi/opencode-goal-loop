@@ -148,7 +148,7 @@ function parseTokenBudget(s) {
   const n = parseFloat(m[1]);
   const mult = m[2].toLowerCase() === "k" ? 1000 : m[2].toLowerCase() === "m" ? 1e6 : 1;
   const out = Math.round(n * mult);
-  return out > 0 ? out : null;
+  return Number.isSafeInteger(out) && out > 0 ? out : null;
 }
 var ACTIONS = ["status", "pause", "resume", "clear", "stop", "edit", "gate", "help"];
 function parseGoalArgs(raw) {
@@ -199,8 +199,8 @@ function parseGoalArgs(raw) {
     if (firstWord === "edit") {
       if (!rest)
         return { action: "invalid", error: "usage: /goal edit <new objective>" };
-      const c2 = extractContract(rest);
-      return { action: "edit", text: c2.headline, contract: c2.contract, tokenBudget, turnBudget };
+      const c = extractContract(rest);
+      return { action: "edit", text: c.headline, contract: c.contract, tokenBudget, turnBudget };
     }
     return { action: firstWord };
   }
@@ -744,8 +744,8 @@ Fix the cause, then /goal resume.`);
           return { action: "paused" };
         }
         meta.lastCycleHadGates = true;
-        const sent2 = await this.#continueGoal(sid, goal, gateFailurePrompt(goal, res.results));
-        return { action: sent2 ? "continued" : "noop" };
+        const sent = await this.#continueGoal(sid, goal, gateFailurePrompt(goal, res.results));
+        return { action: sent ? "continued" : "noop" };
       }
     }
     meta.lastCycleHadGates = false;
@@ -769,7 +769,7 @@ var dbg = (m) => {
 };
 var log = (...a) => console.error("[opencode-goal]", ...a);
 var NEUTRAL = "(goal command handled by the goal plugin)";
-var goal_fresh_default = {
+var goal_default = {
   id: "opencode-goal",
   setup: async (ctx) => {
     dbg("setup entered active=" + !!globalThis.__opencode_goal_active);
@@ -958,5 +958,5 @@ var goal_fresh_default = {
   }
 };
 export {
-  goal_fresh_default as default
+  goal_default as default
 };
