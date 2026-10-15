@@ -40,7 +40,7 @@ export function parseTokenBudget(s) {
   const n = parseFloat(m[1]);
   const mult = m[2].toLowerCase() === "k" ? 1_000 : m[2].toLowerCase() === "m" ? 1_000_000 : 1;
   const out = Math.round(n * mult);
-  return out > 0 ? out : null;
+  return Number.isSafeInteger(out) && out > 0 ? out : null;
 }
 
 const ACTIONS = ["status", "pause", "resume", "clear", "stop", "edit", "gate", "help"];
