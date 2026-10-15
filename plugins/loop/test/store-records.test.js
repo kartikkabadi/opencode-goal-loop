@@ -20,12 +20,12 @@ for (const [name, load] of [["source", loadStore], ["bundle", bundled.loadStore]
       const valid = newLoop({ sessionId: "ses_good", prompt: "Check progress", interval: { kind: "time", ms: 10000, raw: "10s" } });
       const path = storePath();
       mkdirSync(dirname(path), { recursive: true });
-      for (const malformed of [null, 42, { ...valid, updatedAt: { toString: null } }, { ...valid, updatedAt: 42 }, { ...valid, updatedAt: "invalid" }, { ...valid, updatedAt: null, createdAt: null }, { ...valid, id: null }, { ...valid, interval: null }, { ...valid, interval: { kind: "time", ms: -1 } }]) {
+      for (const malformed of [null, 42, { ...valid, fires: null }, { ...valid, nextRunAt: { toString: null } }, { ...valid, maxFires: {} }, { ...valid, backoffMs: {} }, { ...valid, consecutiveErrors: {} }, { ...valid, turnsUntilNext: {} }, { ...valid, interval: { ...valid.interval, ms: 1 } }, { ...valid, interval: { ...valid.interval, ms: 604800001 } }, { ...valid, interval: { kind: "time", ms: 10000 } }, { ...valid, updatedAt: { toString: null } }, { ...valid, updatedAt: 42 }, { ...valid, updatedAt: "invalid" }, { ...valid, updatedAt: null, createdAt: null }, { ...valid, id: null }, { ...valid, interval: null }, { ...valid, interval: { kind: "time", ms: -1 } }]) {
         writeFileSync(path, JSON.stringify({ version: 1, loops: [valid, malformed] }));
         const records = load();
         expect(records.length).toBe(1);
         expect(records[0].id).toBe(valid.id);
-        expect(JSON.parse(readFileSync(path, "utf8")).loops.length).toBe(1);
+        expect(JSON.parse(readFileSync(path, "utf8")).loops).toEqual([valid]);
       }
     } finally {
       if (old === undefined) delete process.env.XDG_STATE_HOME;
