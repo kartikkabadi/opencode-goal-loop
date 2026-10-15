@@ -45,6 +45,7 @@ export function parseLoopArgs(rawArgs) {
   if (labelM) {
     label = labelM[1];
     text = text.replace(labelM[0], "");
+    if (/(?:^|\s)--label(?:\s|$)/.test(text)) return { action: "invalid", error: "--label must be specified once" };
   } else if (/(?:^|\s)--label(?:\s|$)/.test(text)) {
     return { action: "invalid", error: "--label needs a value: letters, digits, dot, dash, underscore (max 32 chars)" };
   }
@@ -55,6 +56,7 @@ export function parseLoopArgs(rawArgs) {
       return { action: "invalid", error: "--times needs an integer from 1 to 1000" };
     }
     text = text.replace(timesM[0], "");
+    if (/(?:^|\s)--times(?:\s|$)/.test(text)) return { action: "invalid", error: "--times must be specified once" };
   } else if (/(?:^|\s)--times(?:\s|$)/.test(text)) {
     return { action: "invalid", error: "--times needs a number (max 1000)" };
   }
