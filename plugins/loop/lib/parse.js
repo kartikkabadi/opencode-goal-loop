@@ -41,23 +41,28 @@ export function parseLoopArgs(rawArgs) {
   let label;
   let times;
   let immediate = true;
-  const labelM = /--label\s+([A-Za-z0-9._-]{1,32})/.exec(text);
+  const labelM = /(?:^|\s)--label\s+([A-Za-z0-9._-]{1,32})(?=\s|$)/.exec(text);
   if (labelM) {
     label = labelM[1];
     text = text.replace(labelM[0], "");
-  } else if (/--label/.test(text)) {
+    if (/(?:^|\s)--label(?:\s|$)/.test(text)) return { action: "invalid", error: "--label must be specified once" };
+  } else if (/(?:^|\s)--label(?:\s|$)/.test(text)) {
     return { action: "invalid", error: "--label needs a value: letters, digits, dot, dash, underscore (max 32 chars)" };
   }
-  const timesM = /--times\s+(\d+)/.exec(text);
+  const timesM = /(?:^|\s)--times\s+(\d+)(?=\s|$)/.exec(text);
   if (timesM) {
     times = parseInt(timesM[1], 10);
+    if (!Number.isSafeInteger(times) || times < 1 || times > 1000) {
+      return { action: "invalid", error: "--times needs an integer from 1 to 1000" };
+    }
     text = text.replace(timesM[0], "");
-  } else if (/--times/.test(text)) {
+    if (/(?:^|\s)--times(?:\s|$)/.test(text)) return { action: "invalid", error: "--times must be specified once" };
+  } else if (/(?:^|\s)--times(?:\s|$)/.test(text)) {
     return { action: "invalid", error: "--times needs a number (max 1000)" };
   }
-  if (/--no-immediate/.test(text)) {
+  if (/(?:^|\s)--no-immediate(?=\s|$)/.test(text)) {
     immediate = false;
-    text = text.replace(/--no-immediate/g, "");
+    text = text.replace(/(?:^|\s)--no-immediate(?=\s|$)/g, "");
   }
   text = text.trim();
 
