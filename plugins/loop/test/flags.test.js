@@ -13,7 +13,7 @@ afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
 for (const [name, parse] of [["source", parseLoopArgs], ["bundle", bundled.parseLoopArgs]]) {
   test(name + ": reject partial and out-of-range flag values", () => {
-    for (const flag of ["--times 2oops", "--times 0", "--times 1001", "--times 999999999999999999999999", "--label " + "a".repeat(33)]) {
+    for (const flag of ["--times 2oops --times 3", "--times 3 --times 2oops", "--label invalid! --label valid", "--label valid --label invalid!", "--times 2oops", "--times 0", "--times 1001", "--times 999999999999999999999999", "--label " + "a".repeat(33)]) {
       expect(parse("5m check " + flag).action).toBe("invalid");
     }
     const normal = parse("5m check --times 3 --label ops --no-immediate");
