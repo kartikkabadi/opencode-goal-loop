@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
         with:
-          bun-version: "1.4.3"
+          bun-version: "1.4.4"
       - run: bun test plugins/goal/test plugins/loop/test
       - run: bun build plugins/goal/index.js --target=bun --external @opencode-ai/plugin --outfile=/tmp/goal-bundle.js
       - run: bun build plugins/loop/index.js --target=bun --external @opencode-ai/plugin --outfile=/tmp/loop-bundle.js
